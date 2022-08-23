@@ -1,0 +1,8 @@
+@font-face {
+    font-family: 'Sriracha-Regular';
+    src: url(../fonts/Sriracha-Regular.ttf);
+}
+body {
+    /* font-family: 'Kanit', sans-serif; */
+    font-family: 'Sriracha-Regular', sans-serif;
+}
