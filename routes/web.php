@@ -2,6 +2,8 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\BackendController;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -28,4 +30,9 @@ Route::get('contact',
 );
 Route::get('login',
 [HomeController::class,'login']
+);
+
+// ************ Backend Route *************
+Route::get('backend/dasboard',
+[BackendController::class,'dasboard']
 );
