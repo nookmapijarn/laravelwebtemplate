@@ -29,13 +29,12 @@
         </div>
 
         @include('backend.includes.foot')
-
         <!-- Control Sidebar -->
         <aside class="control-sidebar control-sidebar-dark">
             <!-- Control sidebar content goes here -->
         </aside>
 
     </div>
-
+    @stack('scripts');
 </body>
 </html>

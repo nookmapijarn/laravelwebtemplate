@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator; // ตรวสสอบความถูกต้องของฟอร์ม
 
 class ProductController extends Controller
 {
@@ -15,7 +16,8 @@ class ProductController extends Controller
     public function index()
     {
         // อ่านข้อมูลสินค้า
-        $products= Product::all();
+        //$products = Product::orderBy('id','desc')->limit(50)->get();
+        $products = Product::all();
         return view('backend.pages.products.index', compact('products'));
     }
 
@@ -27,6 +29,7 @@ class ProductController extends Controller
     public function create()
     {
         //
+        return view('backend.pages.products.create');
     }
 
     /**
@@ -37,7 +40,41 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // echo "<pre>";
+        // print_r($request->all());
+        // echo "</pre>";
+
+        // สร้างกฏสำหรับการตรวจสอบ
+        $rules = [
+            'prd_name' => 'required',
+            'prd_slug' => 'required',
+            'prd_description' => 'required',
+            'price' => 'required|numeric',
+        ];
+
+        $messages = [
+            'required' => 'ฟิลด์ :attribute นี้จำเป็น',
+            'numeric' => 'ฟิลด์นี้ต้องเป็นตัวเลขเท่านั้น'
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if($validator->fails()){ // ตรวจสอบฟอร์มยังไม่ผ่าน
+            return redirect()->back()->withErrors($validator)->withInput();
+        }else{
+            $data_product = array(
+                'name' => $request->prd_name,
+                'slug' => $request->prd_slug,
+                'description' => $request->prd_description,
+                'price' => $request->prd_price,
+                'image' => "https://via.placeholder.com/800x600.png/008876?text=samsung"
+            );
+    
+            $status = Product::create($data_product);
+            //return $status;
+            return redirect()->route('products.create')->with('success', 'Add Product success'); //with แสดง Session ที่ view
+        }
+        
     }
 
     /**
@@ -46,9 +83,9 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Product $product)
     {
-        //
+        return view('backend.pages.products.show',compact('product'));
     }
 
     /**
@@ -57,9 +94,10 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(Product $product)
     {
         //
+        return view('backend.pages.products.edit',compact('product'));
     }
 
     /**
@@ -69,9 +107,11 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, Product $product)
     {
         //
+        $product->update($request->all());
+        return redirect()->route('products.index')->with('success', 'Update Success');
     }
 
     /**
@@ -80,8 +120,10 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(Product $product)
     {
         //
+        $product->delete();
+        return redirect()->route('products.index')->with('success', 'Delete Success');
     }
 }
