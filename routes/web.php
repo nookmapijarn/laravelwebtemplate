@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\BackendController;
+use App\Http\Controllers\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,7 +16,7 @@ use App\Http\Controllers\BackendController;
 |
 */
 
-// Route to Controller
+// ************ Fontend Route *************
 Route::get('/',
 [HomeController::class,'home']
 );
@@ -32,7 +33,19 @@ Route::get('login',
 [HomeController::class,'login']
 );
 
-// ************ Backend Route *************
-Route::get('backend/dasboard',
-[BackendController::class,'dasboard']
-);
+/*
+|------------------------------------------------------------------------
+| Backend Route
+|------------------------------------------------------------------------
+*/
+Route::group([
+    'prefix' => 'backend'
+],function(){
+    Route::get('/', [BackendController::class, 'dashboard']);
+    Route::get('dashboard', [BackendController::class, 'dashboard']);
+    Route::get('employees', [BackendController::class, 'employees']);
+    Route::get('employeelist', [BackendController::class, 'employeelist']);
+
+    // Routing Resoure
+    Route::resource('products', ProductController::class);
+});

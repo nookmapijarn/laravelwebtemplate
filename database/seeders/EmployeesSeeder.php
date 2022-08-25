@@ -4,6 +4,10 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
+//use DB;
+
+// เรียกใช้งาน Model Employee
+use App\Models\Employee;
 
 class EmployeesSeeder extends Seeder
 {
@@ -14,7 +18,10 @@ class EmployeesSeeder extends Seeder
      */
     public function run()
     {
-        DB::table('employees')->insert([
+        // ลบข้อมูลเก่าออกก่อน
+        DB::table('employees')->delete();
+
+        $data = [
             [
                 'fullname' => 'John Deo',
                 'gender' => 'Male',
@@ -24,27 +31,13 @@ class EmployeesSeeder extends Seeder
                 'address' => '8/80 moo.8 bagnkok',
                 'avartar' => 'noavatar.jpg',
                 'status' => 1
-            ],
-            [
-                'fullname' => 'สมชาย ใจดี',
-                'gender' => 'Male',
-                'email' => 'somchai@email.com',
-                'tel' => '02098939223',
-                'age' => 20,
-                'address' => '9/99 moo.9 bagnkok',
-                'avartar' => 'noavatar.jpg',
-                'status' => 1
-            ],
-            [
-                'fullname' => 'Siriwan Kongman',
-                'gender' => 'Female',
-                'email' => 'siriwan@email.com',
-                'tel' => '08799329232',
-                'age' => 27,
-                'address' => '366 chonburi',
-                'avartar' => 'noavatar.jpg',
-                'status' => 1
             ]
-        ]);
+        ];
+
+        Employee::insert($data);
+
+        // การ faker ข้อมูล
+        Employee::factory(100)->create();
+
     }
 }
