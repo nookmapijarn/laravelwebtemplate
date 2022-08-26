@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\BackendController;
@@ -39,7 +40,8 @@ Route::get('login',
 |------------------------------------------------------------------------
 */
 Route::group([
-    'prefix' => 'backend'
+    'prefix' => 'backend',
+    'middleware' => 'auth'
 ],function(){
     Route::get('/', [BackendController::class, 'dashboard']);
     Route::get('dashboard', [BackendController::class, 'dashboard']);
@@ -49,3 +51,6 @@ Route::group([
     // Routing Resoure
     Route::resource('products', ProductController::class);
 });
+Auth::routes();
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

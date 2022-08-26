@@ -1,12 +1,12 @@
 @extends('backend.layouts.main_template')
-@section('title') Product List @parent @endsection
+@section('title') รายการสินค้า @parent @endsection
 @section('content')
 
   <section class="content-header">
     <div class="container-fluid">
       <div class="row mb-2">
         <div class="col-sm-6">
-          <h1>Product List</h1>
+          <h1>รายการสินค้า</h1>
         </div>
         <div class="col-sm-6">
           <ol class="breadcrumb float-sm-right">
@@ -26,11 +26,13 @@
           <div class="card">
             <!-- /.card-header -->
             <div class="card-body">
-                <a class="mb-5" href="{{ route('products.create') }}">
+              <div class="clearfix">
+                <a class="float-right" href="{{ route('products.create') }}">
                     <button type="button" class="btn btn-success">
-                        <i class="fa fa-plus" ></i> Add Item
+                        <i class="fa fa-plus" ></i> เพิ่มรายการสินค้า
                     </button>
                 </a>
+              </div>
                 @if($message = Session::get('success'))
                 <div class="alert alert-primary text-center mb-3">
                     {{ $message }}
@@ -129,7 +131,76 @@
       "info": true,
       "autoWidth": false,
       "responsive": true,
-      "buttons": ["copy", "csv", "excel", "pdf", "print"]
+      "buttons": [
+        {
+            extend: 'copyHtml5',
+            exportOptions: {
+                columns: [ 0, 1, 2, 3, 5, 6 ]
+            }
+        },
+        {
+            extend: 'csvHtml5',
+            exportOptions: {
+                columns: [ 0, 1, 2, 3, 5, 6 ]
+            }
+        },
+        // {
+        //     extend: 'excelHtml5',
+        //     exportOptions: {
+        //         columns: [ 0, 1, 2, 3, 5, 6 ]
+        //     }
+        // },
+        {
+            extend: 'pdfHtml5',
+            exportOptions: {
+                columns: [ 0, 1, 2, 3, 5, 6 ]
+            }
+        },
+        {
+            extend: 'print',
+            exportOptions: {
+                columns: [ 0, 1, 2, 3, 5, 6 ]
+            }
+        },
+        ,"colvis",
+      ],
+      "columnDefs": [
+      {
+        "targets": [4,7],
+        "orderable": false
+      }],
+      "language": {
+        "info": "แสดง START ถึง END จาก TOTAL แถว",
+        "infoEmpty": "แสดงทั้งหมด 0 to 0 of 0 รายการ",
+        "zeroRecords": "ไม่พบข้อมูล",
+        "search": "ค้นหา:",
+        "paginate": {
+          "first":      "หน้าแรก",
+          "last":       "หน้าสุดท้าย",
+          "next":       "ถัดไป",
+          "previous":   "ก่อนหน้า"
+        },
+        "buttons": {
+            "collection": "ชุดข้อมูล",
+            "colvis": "การมองเห็นคอลัมน์",
+            "colvisRestore": "เรียกคืนการมองเห็น",
+            "copy": "คัดลอก",
+            "copyKeys": "กดปุ่ม Ctrl หรือ Command + C เพื่อคัดลอกข้อมูลบนตารางไปยัง Clipboard ที่เครื่องของคุณ",
+            "copySuccess": {
+                "_": "คัดลอกช้อมูลแล้ว จำนวน %d แถว",
+                "1": "คัดลอกข้อมูลแล้ว จำนวน 1 แถว"
+            },
+            "copyTitle": "คัดลอกไปยังคลิปบอร์ด",
+            "csv": "CSV",
+            "excel": "Excel",
+            "pageLength": {
+                "_": "แสดงข้อมูล %d แถว",
+                "-1": "แสดงข้อมูลทั้งหมด"
+            },
+            "pdf": "PDF",
+            "print": "สั่งพิมพ์"
+        },
+      }
     }).buttons().container().appendTo('#example2_wrapper .col-md-6:eq(0)');
 
   });

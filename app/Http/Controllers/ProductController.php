@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator; // ตรวสสอบความถูกต้องของฟอร์ม
+use Intervention\Image\Facades\Image;
+use Exception;
+
 
 class ProductController extends Controller
 {
@@ -49,7 +52,7 @@ class ProductController extends Controller
             'prd_name' => 'required',
             'prd_slug' => 'required',
             'prd_description' => 'required',
-            'price' => 'required|numeric',
+            'prd_price' => 'required|numeric',
         ];
 
         $messages = [
@@ -62,19 +65,61 @@ class ProductController extends Controller
         if($validator->fails()){ // ตรวจสอบฟอร์มยังไม่ผ่าน
             return redirect()->back()->withErrors($validator)->withInput();
         }else{
+
             $data_product = array(
                 'name' => $request->prd_name,
                 'slug' => $request->prd_slug,
                 'description' => $request->prd_description,
-                'price' => $request->prd_price,
-                'image' => "https://via.placeholder.com/800x600.png/008876?text=samsung"
+                'price' => $request->prd_price
             );
+
+            // Upload Images
+            try {
+
+                // รับค่ารูปเข้ามา
+                $image = $request->file('prd_image');
+
+                // เช็คว่าต้องมีไฟล์ภาพส่งมา
+                if(!empty($image)){
+
+                    // กำหนดชื่อไฟล์ให้ไม่ซ้ำกัน
+                    $file_name = "product_" . time() . "." . $image->getClientOriginalExtension();
+
+                    // เช็คสกุลไฟล์
+                    if($image->getClientOriginalExtension() == "jpg" or $image->getClientOriginalExtension() == "png") {
+
+                        $imgwidth = 300; // ขนาดความกว้าง
+                        $folderupload = 'assets/backend/images/products';
+                        $path = $folderupload."/".$file_name;
+
+                        // Upload to folder products
+                        $img = Image::make($image->getRealPath());
+
+                        if ($img->width() > $imgwidth) {
+                            $img->resize($imgwidth, null, function ($constraint) {
+                                $constraint->aspectRatio();
+                            });
+                        }
+
+                        $img->save($path);
+
+                        $data_product['image'] = $file_name;
+
+                    }else{
+                        return redirect()->back()->withErrors($validator)->withInput()->with('status', '<div class="alert alert-danger">ไฟล์ภาพไม่รองรับ อนุญาติเฉพาะ .jpg และ .png</div>');
+                    }
+
+                }
+
+            } catch (Exception $e) {
+                report($e);
+                return false;
+            }
     
             $status = Product::create($data_product);
-            //return $status;
-            return redirect()->route('products.create')->with('success', 'Add Product success'); //with แสดง Session ที่ view
+            return redirect()->route('products.create')->with('success','Add Product Succcess');
         }
-        
+
     }
 
     /**
